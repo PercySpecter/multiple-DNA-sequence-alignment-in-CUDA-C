@@ -91,7 +91,7 @@ __global__ void align(char *key , char *s , int *scores , int n , int num)
 		}
 		r1[k] = '\0';
 		r2[k] = '\0';
-		printf("\nAlignment #%d :\n%s\n%s\n" , index+1 , r1 , r2);
+		printf("\nAlignment #%d :\n-------------------\nKey:\n%s\nQuery:\n%s\n" , index+1 , r1 , r2);
 		int score = 0;
 		for(i = 0; i < k; i++)
 		{
@@ -106,17 +106,20 @@ __global__ void align(char *key , char *s , int *scores , int n , int num)
 	}
 }
 
-int main(void)
+int main(int argc, char** argv)
 {
 	int size = sizeof(int);
 	int THREADS = 1024;
 	
+	freopen(argv[1] , "r", stdin);
+	freopen(argv[2] , "a", stdout);
+	
 	int *host_scores , *scores;
 	int i , num , n;
 	
-	printf("Enter size:");
+	//printf("Enter size:");
 	scanf("%d" , &n);
-	printf("Enter number of queries:");
+	//printf("Enter number of queries:");
 	scanf("%d" , &num);
 	
 	int m = n < THREADS ? n : THREADS;
@@ -126,9 +129,9 @@ int main(void)
 	char *host_q = (char *)malloc(num * n + 2);
 	char *key , *q;
 	
-	printf("Enter key:");
+	//printf("Enter key:");
 	scanf("%s" , host_key);
-	printf("Enter the queries:");
+	//printf("Enter the queries:");
 	for(i = 0; i <num; i++)
 	{
 		if(i == 0)
@@ -152,7 +155,7 @@ int main(void)
 
 	cudaMemcpy(host_scores , scores , size * num , cudaMemcpyDeviceToHost);
 
-	printf("\n\nAlignment Scores:\n");
+	printf("\n\nAlignment Scores:\n----------------------------\n");
 	for(i = 0; i < num; i++)
 		printf("Query #%d : %d\n" , i+1 , host_scores[i]);
 	cudaFree(key);
