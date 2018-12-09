@@ -5,18 +5,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 128
+#define N 300
 
-typedef long long int ll;
+//typedef long long int ll;
 
-__global__ void align(char *key , char *s , ll *scores , ll n , ll num)
+__global__ void align(char *key , char *s , int *scores , int n , int num)
 {
-	ll GAP = -1 , MATCH = 1 , MISMATCH = -1;
-	ll index = threadIdx.x + blockIdx.x * blockDim.x;
+	int GAP = -1 , MATCH = 1 , MISMATCH = -1;
+	int index = threadIdx.x + blockIdx.x * blockDim.x;
 	if(index < num)
 	{
-		ll i , j , k , dia , top , left;
-		ll dp[N + 1][N + 1];
+		int i , j , k , dia , top , left;
+		int dp[N + 1][N + 1];
 		
 		char r1[2*N+2] , r2[2*N+2];
 		char traceback[N+1][N+1];
@@ -47,7 +47,7 @@ __global__ void align(char *key , char *s , ll *scores , ll n , ll num)
 		{
 			for (j = 0; j <= n; j++)
 			{
-				printf("%lld " , dp[i][j]);
+				printf("%d " , dp[i][j]);
 			}
 			printf("\n");
 		}
@@ -91,8 +91,8 @@ __global__ void align(char *key , char *s , ll *scores , ll n , ll num)
 		}
 		r1[k] = '\0';
 		r2[k] = '\0';
-		printf("\nAlignment #%lld :\n%s\n%s\n" , index , r1 , r2);
-		ll score = 0;
+		printf("\nAlignment #%d :\n%s\n%s\n" , index+1 , r1 , r2);
+		int score = 0;
 		for(i = 0; i < k; i++)
 		{
 			if(r1[k] == '-' || r2[k] == '-')
@@ -108,16 +108,18 @@ __global__ void align(char *key , char *s , ll *scores , ll n , ll num)
 
 int main(void)
 {
-	int size = sizeof(ll);
-	ll THREADS = 1024;
+	int size = sizeof(int);
+	int THREADS = 1024;
 	
-	ll *host_scores , *scores;
-	ll i , num , n;
+	int *host_scores , *scores;
+	int i , num , n;
 	
 	printf("Enter size:");
-	scanf("%lld" , &n);
+	scanf("%d" , &n);
 	printf("Enter number of queries:");
-	scanf("%lld" , &num);
+	scanf("%d" , &num);
+	
+	int m = n < THREADS ? n : THREADS;
 	
 	char *host_key = (char *)malloc(n);
 	char *tmp = (char *)malloc(n);
@@ -138,7 +140,7 @@ int main(void)
 		}
 	}
 	
-	host_scores = (ll *)malloc(size * num);
+	host_scores = (int *)malloc(size * num);
 	
 	cudaMalloc((void **)&scores , num * size);
 	cudaMalloc((void **)&key , n);
@@ -146,13 +148,13 @@ int main(void)
 	cudaMemcpy(key , host_key , n , cudaMemcpyHostToDevice);
 	cudaMemcpy(q , host_q , n * num + 2 , cudaMemcpyHostToDevice);
 	
-	align <<<(n + THREADS - 1) / THREADS , THREADS>>> (key , q , scores , n , num);
+	align <<<(n + m - 1) / m , m>>> (key , q , scores , n , num);
 
 	cudaMemcpy(host_scores , scores , size * num , cudaMemcpyDeviceToHost);
 
 	printf("\n\nAlignment Scores:\n");
 	for(i = 0; i < num; i++)
-		printf("Query #%lld : %lld\n" , i , host_scores[i]);
+		printf("Query #%d : %d\n" , i+1 , host_scores[i]);
 	cudaFree(key);
 	cudaFree(q);
 	cudaFree(scores);
