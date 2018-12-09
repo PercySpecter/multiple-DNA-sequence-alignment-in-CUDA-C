@@ -1,0 +1,36 @@
+
+Alignment #1 :
+-------------------
+Key:
+TTCGCGGAGGT-CGTGT
+Query:
+-GCACACAGCTACGCGG
+
+Alignment #2 :
+-------------------
+Key:
+TTCGCG-GAGGTCG-T-G-T
+Query:
+--CG-GTCA-TTAGATAGAC
+
+Alignment #3 :
+-------------------
+Key:
+---TTCGCGGAGGTCGTGT
+Query:
+GAGTGC-CTGTGG--GCAC
+
+Alignment #4 :
+-------------------
+Key:
+TTCG--CGGAGGTCGTGT
+Query:
+TT-GTATGCA-CACCCAT
+
+
+Alignment Scores:
+----------------------------
+Query #1 : -1
+Query #2 : -4
+Query #3 : -5
+Query #4 : -4
